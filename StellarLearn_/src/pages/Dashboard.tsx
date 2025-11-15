@@ -1,11 +1,10 @@
 import { Sidebar } from '../components/Sidebar';
 import { User, Star, Target, Clock, Trophy, Zap, BookOpen, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface DashboardProps {
-  onNavigate: (page: string) => void;
-}
+export const Dashboard = () => {
+  const navigate = useNavigate();
 
-export const Dashboard = ({ onNavigate }: DashboardProps) => {
   const constellations = [
     { id: 1, title: 'Algebra Basics', x: 20, y: 25, completed: true, locked: false },
     { id: 2, title: 'Geometry', x: 35, y: 35, completed: true, locked: false },
@@ -46,7 +45,7 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
       disabled={isLocked}
     >
       <div className={`
-        relative w-16 h-16 rounded-full border-2 flex items-center justify-center
+        relative w-10 h-10 rounded-full border-2 flex items-center justify-center
         ${isCompleted 
           ? 'bg-white/20 border-white shadow-lg shadow-white/20' 
           : isLocked 
@@ -109,7 +108,7 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
-      <Sidebar currentPage="dashboard" onNavigate={onNavigate} />
+      <Sidebar />
       
       <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8">
         <div className="max-w-7xl mx-auto space-y-8">
@@ -177,7 +176,7 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
                     isLocked={node.locked}
                     x={node.x}
                     y={node.y}
-                    onClick={() => onNavigate('quests')}
+                    onClick={() => navigate('/quests')}
                   />
                 ))}
               </div>
@@ -230,13 +229,20 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
               <GlassCard className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-white">Recent Missions</h3>
-                  <button className="text-white/60 hover:text-white transition-colors text-sm">
+                  <button 
+                    onClick={() => navigate('/quests')}
+                    className="text-white/60 hover:text-white transition-colors text-sm"
+                  >
                     View All
                   </button>
                 </div>
                 <div className="space-y-3">
                   {recentMissions.map((mission, index) => (
-                    <div key={index} className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+                    <div 
+                      key={index} 
+                      className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                      onClick={() => navigate('/quests')}
+                    >
                       <div className="flex justify-between items-start mb-2">
                         <span className="text-white font-medium text-sm">{mission.title}</span>
                         <ChevronRight className="w-4 h-4 text-white/40" />

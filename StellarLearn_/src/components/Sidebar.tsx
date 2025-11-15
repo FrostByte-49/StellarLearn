@@ -1,15 +1,16 @@
 import { Home, Target, Bot, CreditCard, Award, Settings, Menu, X } from 'lucide-react';
 import { Logo } from './Logo';
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-interface SidebarProps {
-  currentPage: string;
-  onNavigate: (page: string) => void;
-}
-
-export const Sidebar = ({ currentPage, onNavigate }: SidebarProps) => {
+export const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get current page from URL path
+  const currentPage = location.pathname.substring(1) || 'dashboard';
 
   useEffect(() => {
     const checkMobile = () => {
@@ -35,7 +36,14 @@ export const Sidebar = ({ currentPage, onNavigate }: SidebarProps) => {
   ];
 
   const handleNavigation = (page: string) => {
-    onNavigate(page);
+    navigate(`/${page}`);
+    if (isMobile) {
+      setIsMobileOpen(false);
+    }
+  };
+
+  const handleSignOut = () => {
+    navigate('/');
     if (isMobile) {
       setIsMobileOpen(false);
     }
@@ -97,7 +105,7 @@ export const Sidebar = ({ currentPage, onNavigate }: SidebarProps) => {
           </div>
         </div>
         <button
-          onClick={() => handleNavigation('landing')}
+          onClick={handleSignOut}
           className="w-full text-sm text-white/60 hover:text-white transition-colors py-2 border border-white/10 hover:border-white/20 rounded-2xl backdrop-blur-sm"
         >
           Sign Out

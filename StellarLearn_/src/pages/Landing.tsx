@@ -1,12 +1,11 @@
 import { Rocket, Sparkles, Target, Users, BookOpen, Star, Globe, Award, Zap, ChevronRight, Play, Brain, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { AstronautAvatar } from '../components/AstronautAvatar';
 
-interface LandingProps {
-  onNavigate: (page: string) => void;
-}
+export const Landing = () => {
+  const navigate = useNavigate();
 
-export const Landing = ({ onNavigate }: LandingProps) => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-black via-[#0A0F2D] to-black">
       {/* Animated Star Background */}
@@ -36,13 +35,13 @@ export const Landing = ({ onNavigate }: LandingProps) => {
         </div>
         <div className="flex items-center gap-4">
           <button
-            onClick={() => onNavigate('dashboard')}
+            onClick={() => navigate('/dashboard')}
             className="text-white/80 hover:text-white transition-all duration-300 font-medium hover:scale-105 border border-white/20 px-6 py-2 rounded-2xl backdrop-blur-sm"
           >
             Sign In
           </button>
           <button
-            onClick={() => onNavigate('dashboard')}
+            onClick={() => navigate('/dashboard')}
             className="bg-white text-black px-6 py-2 rounded-2xl font-medium hover:bg-white/90 transition-all duration-300 hover:scale-105"
           >
             Get Started
@@ -75,7 +74,7 @@ export const Landing = ({ onNavigate }: LandingProps) => {
 
             <div className="flex flex-wrap gap-4">
               <button
-                onClick={() => onNavigate('dashboard')}
+                onClick={() => navigate('/dashboard')}
                 className="bg-white text-black px-8 py-4 rounded-2xl font-medium hover:bg-white/90 transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
                 <span>Launch Learning</span>
@@ -270,7 +269,10 @@ export const Landing = ({ onNavigate }: LandingProps) => {
                   ))}
                 </ul>
                 <div className="mt-6 pt-4 border-t border-white/10">
-                  <button className="text-sm text-white hover:text-white/80 transition-colors font-medium flex items-center gap-2">
+                  <button 
+                    onClick={() => navigate('/quests')}
+                    className="text-sm text-white hover:text-white/80 transition-colors font-medium flex items-center gap-2"
+                  >
                     Explore Galaxy
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -298,7 +300,7 @@ export const Landing = ({ onNavigate }: LandingProps) => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button
-                onClick={() => onNavigate('dashboard')}
+                onClick={() => navigate('/dashboard')}
                 className="bg-white text-black px-8 py-4 rounded-2xl font-medium hover:bg-white/90 transition-all duration-300 hover:scale-105 flex items-center gap-3 text-lg"
               >
                 <span>Begin Cosmic Journey</span>

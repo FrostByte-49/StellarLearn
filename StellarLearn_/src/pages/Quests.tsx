@@ -1,10 +1,7 @@
 import { Sidebar } from '../components/Sidebar';
 import { BookOpen, Zap, Brain, TrendingUp, Filter, Target, ChevronRight, Clock, Star, Lock, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
-
-interface QuestsProps {
-  onNavigate: (page: string) => void;
-}
+import { useNavigate } from 'react-router-dom';
 
 interface Question {
   id: number;
@@ -35,7 +32,8 @@ interface MissionProgress {
   answers: number[];
 }
 
-export const Quests = ({ onNavigate }: QuestsProps) => {
+export const Quests = () => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'Easy' | 'Medium' | 'Hard'>('all');
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -195,7 +193,7 @@ export const Quests = ({ onNavigate }: QuestsProps) => {
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
-        <Sidebar currentPage="quests" onNavigate={onNavigate} />
+        <Sidebar />
         <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 flex items-center justify-center">
           <div className="text-white text-xl">Loading missions...</div>
         </main>
@@ -209,7 +207,7 @@ export const Quests = ({ onNavigate }: QuestsProps) => {
 
     return (
       <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
-        <Sidebar currentPage="quests" onNavigate={onNavigate} />
+        <Sidebar />
         
         <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8">
           <div className="max-w-4xl mx-auto">
@@ -317,7 +315,7 @@ export const Quests = ({ onNavigate }: QuestsProps) => {
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
-      <Sidebar currentPage="quests" onNavigate={onNavigate} />
+      <Sidebar />
       
       <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8">
         <div className="max-w-7xl mx-auto space-y-8">
@@ -327,7 +325,10 @@ export const Quests = ({ onNavigate }: QuestsProps) => {
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Mission Quests</h1>
               <p className="text-white/60">Choose your next learning adventure</p>
             </div>
-            <button className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-2xl font-medium hover:bg-white/90 transition-all duration-300">
+            <button 
+              onClick={() => navigate('/quests')}
+              className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-2xl font-medium hover:bg-white/90 transition-all duration-300"
+            >
               <Zap className="w-4 h-4" />
               Daily Challenge
             </button>
