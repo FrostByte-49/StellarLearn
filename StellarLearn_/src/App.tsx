@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Starfield } from './components/Starfield';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Landing } from './pages/Landing';
 import { Dashboard } from './pages/Dashboard';
 import { Quests } from './pages/Quests';
@@ -9,36 +8,22 @@ import { Achievements } from './pages/Achievements';
 import { Settings } from './pages/Settings';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('landing');
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'landing':
-        return <Landing onNavigate={setCurrentPage} />;
-      case 'dashboard':
-        return <Dashboard onNavigate={setCurrentPage} />;
-      case 'quests':
-        return <Quests onNavigate={setCurrentPage} />;
-      case 'mentor':
-        return <Mentor onNavigate={setCurrentPage} />;
-      case 'flashcards':
-        return <Flashcards onNavigate={setCurrentPage} />;
-      case 'achievements':
-        return <Achievements onNavigate={setCurrentPage} />;
-      case 'settings':
-        return <Settings onNavigate={setCurrentPage} />;
-      default:
-        return <Landing onNavigate={setCurrentPage} />;
-    }
-  };
-
   return (
-    <div className="relative min-h-screen">
-      <Starfield />
-      <div className="relative z-10">
-        {renderPage()}
+    <Router>
+      <div className="min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/quests" element={<Quests />} />
+          <Route path="/mentor" element={<Mentor />} />
+          <Route path="/flashcards" element={<Flashcards />} />
+          <Route path="/achievements" element={<Achievements />} />
+          <Route path="/settings" element={<Settings />} />
+          {/* Redirect any unknown routes to landing page */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
 
