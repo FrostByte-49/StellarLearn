@@ -1,140 +1,289 @@
 import { Sidebar } from '../components/Sidebar';
-import { ChatBubble } from '../components/ChatBubble';
 import { AstronautAvatar } from '../components/AstronautAvatar';
-import { GlassCard } from '../components/GlassCard';
-import { Send, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { Send, Sparkles, Brain, BookOpen, Zap, Target } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 
-interface MentorProps {
-  onNavigate: (page: string) => void;
+interface Message {
+  id: number;
+  message: string;
+  isUser: boolean;
+  timestamp: string;
 }
 
-export const Mentor = ({ onNavigate }: MentorProps) => {
+export const Mentor = () => {
   const [inputValue, setInputValue] = useState('');
-
-  const [messages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      message: "Hello! I'm your AI astronaut mentor. How can I help you explore the universe of knowledge today?",
+      message: "Hello! I'm Nova, your AI astronaut mentor. I'm here to help you explore the universe of knowledge. What would you like to learn today?",
       isUser: false,
-      timestamp: '10:30 AM',
-    },
-    {
-      id: 2,
-      message: "Can you help me understand quadratic equations?",
-      isUser: true,
-      timestamp: '10:32 AM',
-    },
-    {
-      id: 3,
-      message: "Of course! Quadratic equations are polynomial equations of degree 2, typically in the form ax² + bx + c = 0. Think of them like the trajectory of a rocket - they create beautiful parabolic curves! Would you like me to generate some practice problems or create flashcards for you?",
-      isUser: false,
-      timestamp: '10:32 AM',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const quickPrompts = [
-    { icon: <Sparkles className="w-4 h-4" />, text: 'Generate quick notes' },
-    { icon: <Sparkles className="w-4 h-4" />, text: 'Make 5 flashcards' },
-    { icon: <Sparkles className="w-4 h-4" />, text: 'Explain like I\'m 10' },
-    { icon: <Sparkles className="w-4 h-4" />, text: 'Quiz me on this topic' },
+    { icon: <BookOpen className="w-4 h-4" />, text: 'Explain quantum physics basics', prompt: 'Can you explain the basics of quantum physics in simple terms?' },
+    { icon: <Zap className="w-4 h-4" />, text: 'Help with math problem', prompt: 'I need help solving a calculus problem about derivatives.' },
+    { icon: <Brain className="w-4 h-4" />, text: 'Create study plan', prompt: 'Can you create a 7-day study plan for learning web development?' },
+    { icon: <Target className="w-4 h-4" />, text: 'Quiz me on biology', prompt: 'Generate a 5-question quiz about human anatomy.' },
   ];
 
-  return (
-    <div className="flex min-h-screen">
-      <Sidebar currentPage="mentor" onNavigate={onNavigate} />
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-      <main className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto h-[calc(100vh-4rem)] flex flex-col">
-          <div className="mb-6">
-            <h1 className="text-4xl font-bold text-white mb-2">AI Mentor</h1>
-            <p className="text-[#D3F5FF]/60">Your personal learning companion</p>
+  const GlassCard = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+    <div className={`backdrop-blur-md bg-white/5 border border-white/10 rounded-3xl ${className}`}>
+      {children}
+    </div>
+  );
+
+  const ChatBubble = ({ message, isUser, timestamp }: { message: string; isUser: boolean; timestamp: string }) => (
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
+      <div
+        className={`max-w-[80%] rounded-3xl p-4 ${
+          isUser
+            ? 'bg-white text-black rounded-br-none'
+            : 'bg-white/10 text-white rounded-bl-none border border-white/20'
+        }`}
+      >
+        <p className="text-sm whitespace-pre-wrap">{message}</p>
+        <p className={`text-xs mt-2 ${isUser ? 'text-black/60' : 'text-white/60'}`}>{timestamp}</p>
+      </div>
+    </div>
+  );
+
+  // ===============================
+  // REAL BACKEND AI RESPONSE
+  // ===============================
+  const getAIResponse = async (userMessage: string): Promise<string> => {
+  try {
+    const response = await fetch("http://localhost:5000/api/mentor", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt: userMessage }), 
+    });
+
+    const data = await response.json();
+    return data.reply || "Nova couldn't generate a response right now.";
+  } catch (err) {
+    console.error("Backend error:", err);
+    return "I'm having trouble reaching my server right now. Please try again in a moment.";
+  }
+};
+
+  // ===============================
+  // ✉ SEND MESSAGE HANDLER
+  // ===============================
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || isLoading) return;
+
+    const userMessage = inputValue.trim();
+    setInputValue('');
+
+    const newUserMessage: Message = {
+      id: messages.length + 1,
+      message: userMessage,
+      isUser: true,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages(prev => [...prev, newUserMessage]);
+    setIsLoading(true);
+
+    try {
+      const aiResponse = await getAIResponse(userMessage);
+
+      const newAIMessage: Message = {
+        id: messages.length + 2,
+        message: aiResponse,
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+
+      setMessages(prev => [...prev, newAIMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: messages.length + 2,
+        message: "Nova is having some trouble responding right now.",
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleQuickPrompt = (prompt: string) => {
+    setInputValue(prompt);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
+      <Sidebar />
+
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8">
+        <div className="max-w-7xl mx-auto flex flex-col h-full">
+          {/* Header */}
+          <div className="mb-6 flex-shrink-0">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">AI Mentor</h1>
+            <p className="text-white/60">Your personal learning companion</p>
           </div>
 
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
+            {/* Chat Section */}
             <div className="lg:col-span-2 flex flex-col min-h-0">
-              <GlassCard className="flex-1 flex flex-col p-6 min-h-0">
-                <div className="flex-1 overflow-y-auto mb-6 space-y-4 pr-2">
-                  {messages.map((msg) => (
-                    <ChatBubble
-                      key={msg.id}
-                      message={msg.message}
-                      isUser={msg.isUser}
-                      timestamp={msg.timestamp}
+              <GlassCard className="flex-1 flex flex-col min-h-0">
+                {/* Messages */}
+                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6">
+                  <div className="space-y-4 min-h-full">
+                    {messages.map(msg => (
+                      <ChatBubble
+                        key={msg.id}
+                        message={msg.message}
+                        isUser={msg.isUser}
+                        timestamp={msg.timestamp}
+                      />
+                    ))}
+
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="max-w-[80%] rounded-3xl p-4 bg-white/10 text-white rounded-bl-none border border-white/20">
+                          <div className="flex items-center gap-2">
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                            <span className="text-sm text-white/60">Nova is thinking...</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div ref={messagesEndRef} />
+                  </div>
+                </div>
+
+                {/* Input Section */}
+                <div className="p-4 md:p-6 border-t border-white/10 bg-white/5 rounded-b-3xl flex-shrink-0">
+                  {/* Quick Prompts */}
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    {quickPrompts.map((prompt, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleQuickPrompt(prompt.prompt)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 text-sm text-white/80 hover:text-white"
+                      >
+                        {prompt.icon}
+                        <span className="truncate">{prompt.text}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Input */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={inputValue}
+                      onChange={e => setInputValue(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Ask me anything about learning..."
+                      disabled={isLoading}
+                      className="w-full px-4 md:px-6 py-3 md:py-4 pr-12 rounded-2xl bg-white/5 border-2 border-white/10 focus:border-white focus:shadow-lg focus:shadow-white/20 outline-none text-white placeholder-white/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {quickPrompts.map((prompt, index) => (
                     <button
-                      key={index}
-                      className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#00E5FF]/50 transition-all duration-300 text-sm text-[#D3F5FF] hover:text-white"
+                      onClick={handleSendMessage}
+                      disabled={!inputValue.trim() || isLoading}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90 disabled:bg-white/30 disabled:cursor-not-allowed transition-all duration-300"
                     >
-                      {prompt.icon}
-                      {prompt.text}
+                      <Send className="w-4 h-4 md:w-5 md:h-5" />
                     </button>
-                  ))}
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Ask me anything..."
-                    className="w-full px-6 py-4 pr-14 rounded-full bg-white/5 border-2 border-white/10 focus:border-[#00E5FF] focus:shadow-[0_0_30px_rgba(0,229,255,0.3)] outline-none text-white placeholder-[#D3F5FF]/40 transition-all duration-300"
-                  />
-                  <button className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-to-r from-[#5A00FF] to-[#00E5FF] flex items-center justify-center hover:shadow-[0_0_20px_rgba(0,229,255,0.6)] transition-all duration-300">
-                    <Send className="w-5 h-5 text-white" />
-                  </button>
+                  </div>
                 </div>
               </GlassCard>
             </div>
 
+            {/* Sidebar */}
             <div className="space-y-6">
               <GlassCard className="p-6 text-center">
                 <div className="flex justify-center mb-4">
-                  <AstronautAvatar size={120} animated={true} />
+                  <AstronautAvatar size={100} animated={true} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Nova</h3>
-                <p className="text-sm text-[#D3F5FF]/60 mb-4">Your AI Learning Assistant</p>
+                <p className="text-sm text-white/60 mb-4">Your AI Learning Assistant</p>
                 <div className="flex items-center justify-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-[#00FF94] rounded-full animate-pulse" />
-                  <span className="text-[#00FF94]">Online</span>
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                  <span className="text-white">Online & Ready</span>
                 </div>
               </GlassCard>
 
               <GlassCard className="p-6">
-                <h3 className="text-lg font-bold text-white mb-4">Capabilities</h3>
+                <h3 className="text-lg font-bold text-white mb-4">Learning Capabilities</h3>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5A00FF] to-[#00E5FF] flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Explain Concepts</p>
-                      <p className="text-xs text-[#D3F5FF]/60">Break down complex topics</p>
+                      <p className="text-xs text-white/60">Break down complex topics clearly</p>
                     </div>
                   </div>
+
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00E5FF] to-[#FF00E5] flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-4 h-4 text-white" />
+                    <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-white">Generate Content</p>
-                      <p className="text-xs text-[#D3F5FF]/60">Notes, flashcards & quizzes</p>
+                      <p className="text-sm font-medium text-white">Study Resources</p>
+                      <p className="text-xs text-white/60">Create notes & learning materials</p>
                     </div>
                   </div>
+
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FF00E5] to-[#FFB800] flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-4 h-4 text-white" />
+                    <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                      <Target className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Practice & Quizzes</p>
+                      <p className="text-xs text-white/60">Generate exercises and tests</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                      <Brain className="w-4 h-4 text-white" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Personalized Help</p>
-                      <p className="text-xs text-[#D3F5FF]/60">Adapts to your learning style</p>
+                      <p className="text-xs text-white/60">Adapts to your learning needs</p>
                     </div>
                   </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-bold text-white mb-3">Pro Tips</h3>
+                <div className="space-y-2 text-sm text-white/70">
+                  <p>• Be specific with your questions</p>
+                  <p>• Ask for examples when confused</p>
+                  <p>• Request practice problems</p>
+                  <p>• Ask for different explanations</p>
                 </div>
               </GlassCard>
             </div>
