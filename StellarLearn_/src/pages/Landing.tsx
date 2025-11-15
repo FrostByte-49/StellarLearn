@@ -1,5 +1,4 @@
 import { Rocket, Sparkles, Target, Users, BookOpen, Star, Globe, Award, Zap, ChevronRight, Play, Brain, TrendingUp } from 'lucide-react';
-import { CosmicButton } from '../components/CosmicButton';
 import { Logo } from '../components/Logo';
 import { AstronautAvatar } from '../components/AstronautAvatar';
 
