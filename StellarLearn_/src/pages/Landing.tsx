@@ -87,12 +87,12 @@ export const Landing = () => {
 
             <div className="flex items-center gap-8 pt-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">50K+</div>
+                <div className="text-3xl font-bold text-white">0+</div>
                 <div className="text-sm text-white/60">Cosmic Learners</div>
               </div>
               <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">1M+</div>
+                <div className="text-3xl font-bold text-white">0+</div>
                 <div className="text-sm text-white/60">Missions Completed</div>
               </div>
               <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
@@ -128,7 +128,7 @@ export const Landing = () => {
                   <div className="relative">
                     {/* Replace with your image */}
                     <img 
-                      src="/images/Picture_1.jpg" 
+                      src="/images/Pixie.jpg" 
                       alt="StellarLearn Hero"
                       className="w-full h-full object-cover"
                     />
