@@ -1,4 +1,4 @@
-import { Rocket, Sparkles, Target, Users, BookOpen, Star, Globe, Award, Zap, ChevronRight, Play, Brain, TrendingUp } from 'lucide-react';
+import { Rocket, Sparkles, Target, Users, BookOpen, Star, MessageCircle, FileText, ChevronRight, Play, Brain, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { AstronautAvatar } from '../components/AstronautAvatar';
@@ -223,58 +223,57 @@ export const Landing = () => {
       <section className="relative z-10 container mx-auto px-8 py-20">
         <div className="text-center mb-20">
           <h2 className="text-5xl font-bold text-white mb-6">
-            Explore Learning <span className="text-white">Galaxies</span>
+            Powerful Learning <span className="text-white">Features</span>
           </h2>
           <p className="text-xl text-white/60 max-w-3xl mx-auto">
-            Journey through specialized knowledge galaxies, each with unique challenges and rewards
+            Discover our comprehensive suite of tools designed to enhance your learning experience
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {[
             { 
-              name: 'Tech Nebula', 
-              subjects: ['AI Engineering', 'Web Development', 'Data Science'],
-              icon: Zap
+              name: 'Mission Quests', 
+              description: 'Embark on structured learning journeys with guided missions and challenges',
+              icon: Target,
+              path: '/quests'
             },
             { 
-              name: 'Science Galaxy', 
-              subjects: ['Quantum Physics', 'Bio Sciences', 'Chemistry'],
-              icon: Star
+              name: 'LearnHub', 
+              description: 'Upload PDFs or YouTube videos to generate smart notes and practice questions',
+              icon: FileText,
+              path: '/learnhub'
             },
             { 
-              name: 'Arts Constellation', 
-              subjects: ['Digital Design', 'Music Theory', 'Creative Writing'],
-              icon: Award
+              name: 'AI Mentor', 
+              description: 'Get instant help and explanations from our intelligent learning assistant',
+              icon: MessageCircle,
+              path: '/mentor'
             },
             { 
-              name: 'Business Universe', 
-              subjects: ['Entrepreneurship', 'Finance', 'Marketing'],
-              icon: TrendingUp
+              name: 'Flashcards', 
+              description: 'Master concepts with interactive flashcards and spaced repetition',
+              icon: BookOpen,
+              path: '/flashcards'
             }
-          ].map((galaxy, index) => (
+          ].map((feature, index) => (
             <div key={index} className="group relative">
               <div className="absolute inset-0 bg-white/5 rounded-[28px] blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-[28px] p-8 hover:bg-white/10 transition-all duration-500 group-hover:scale-105 h-full">
+              <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-[28px] p-8 hover:bg-white/10 transition-all duration-500 group-hover:scale-105 h-full flex flex-col">
                 <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <galaxy.icon className="w-8 h-8 text-white" />
+                  <feature.icon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-4">{galaxy.name}</h3>
-                <ul className="space-y-3">
-                  {galaxy.subjects.map((subject, idx) => (
-                    <li key={idx} className="flex items-center gap-3 text-white/70 group-hover:text-white transition-colors">
-                      <div className="w-2 h-2 rounded-full bg-white" />
-                      <span className="text-sm font-medium">{subject}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-6 pt-4 border-t border-white/10">
+                <h3 className="text-xl font-bold text-white mb-4">{feature.name}</h3>
+                <p className="text-white/70 text-sm leading-relaxed mb-6 flex-grow">
+                  {feature.description}
+                </p>
+                <div className="mt-auto pt-4 border-t border-white/10">
                   <button 
-                    onClick={() => navigate('/quests')}
-                    className="text-sm text-white hover:text-white/80 transition-colors font-medium flex items-center gap-2"
+                    onClick={() => navigate(feature.path)}
+                    className="text-sm text-white hover:text-white/80 transition-colors font-medium flex items-center gap-2 group/btn"
                   >
-                    Explore Galaxy
-                    <ChevronRight className="w-4 h-4" />
+                    Explore Feature
+                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
               </div>
@@ -376,6 +375,7 @@ export const Landing = () => {
           </div>
         </div>
       </footer>
+      
     </div>
   );
 };
