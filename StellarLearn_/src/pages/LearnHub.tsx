@@ -1,10 +1,8 @@
 import { Sidebar } from '../components/Sidebar';
 import { Upload, FileText, Youtube, MessageCircle, Download, Sparkles } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export const LearnHub = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'upload' | 'notes' | 'questions' | 'mentor'>('upload');
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
