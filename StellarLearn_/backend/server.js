@@ -9,35 +9,66 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 5000;
+// Use Render.com's port or default to 5000 for local development
+const PORT = process.env.PORT || 5000;
+
+// Validate API Key on startup
+if (!process.env.OPENAI_API_KEY) {
+  console.error("❌ OPENAI_API_KEY is missing from environment variables");
+  process.exit(1);
+}
 
 // Helper Function: Calls ChatAnywhere API 
 async function callAI(prompt) {
-  const response = await axios.post(
-    "https://api.chatanywhere.com.cn/v1/chat/completions",
-    {
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are Pixie, an educational AI assistant. For notes, return clean formatted text. For questions, return valid JSON array. Follow the user's instructions carefully."
+  try {
+    const response = await axios.post(
+      "https://api.chatanywhere.com.cn/v1/chat/completions",
+      {
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are Pixie, an educational AI assistant. For notes, return clean formatted text. For questions, return valid JSON array. Follow the user's instructions carefully."
+          },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 1200,
+        temperature: 0.7
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
         },
-        { role: "user", content: prompt }
-      ],
-      max_tokens: 1200,
-      temperature: 0.7
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
+        timeout: 30000 // 30 second timeout
       }
-    }
-  );
+    );
 
-  return response.data.choices[0].message.content;
+    return response.data.choices[0].message.content;
+  } catch (error) {
+    console.error("AI API Error:", error.response?.data || error.message);
+    throw new Error("Failed to get response from AI service");
+  }
 }
+
+// Root route for health check
+app.get("/", (req, res) => {
+  res.json({ 
+    status: "OK", 
+    message: "StellarLearn API Server is running",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({ 
+    status: "OK", 
+    message: "StellarLearn Mentor API is running",
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Mentor Chat Endpoint
 app.post("/api/mentor", async (req, res) => {
@@ -66,10 +97,10 @@ Make sure the response is well-organized and visually clean for the student.
 
     res.json({ reply: aiReply });
   } catch (err) {
-    console.error("Backend Error:", err.response?.data || err.message);
+    console.error("Mentor Error:", err.message);
     res.status(500).json({
       error: "Failed to get response from AI",
-      details: err.response?.data?.error?.message || err.message
+      details: err.message
     });
   }
 });
@@ -175,10 +206,10 @@ Include a mix of question types: multiple-choice, short-answer, and conceptual. 
       questions: questions
     });
   } catch (err) {
-    console.error("PDF Error:", err.response?.data || err.message);
+    console.error("PDF Error:", err.message);
     res.status(500).json({
       error: "Failed to generate notes",
-      details: err.response?.data?.error?.message || err.message
+      details: err.message
     });
   }
 });
@@ -286,19 +317,33 @@ Include different question types and difficulty levels based on the video conten
       questions: questions
     });
   } catch (err) {
-    console.error("YouTube Error:", err.response?.data || err.message);
+    console.error("YouTube Error:", err.message);
     res.status(500).json({
       error: "Failed to generate YouTube notes",
-      details: err.response?.data?.error?.message || err.message
+      details: err.message
     });
   }
 });
 
-// Health check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "OK", message: "StellarLearn Mentor API is running" });
+// 404 handler for undefined routes
+app.use("*", (req, res) => {
+  res.status(404).json({
+    error: "Route not found",
+    availableRoutes: ["/", "/api/health", "/api/mentor", "/api/pdf", "/api/youtube"]
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Unhandled Error:", err);
+  res.status(500).json({
+    error: "Internal server error",
+    message: err.message
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Backend running on port ${PORT}`);
+  console.log(`📍 Local: http://localhost:${PORT}`);
+  console.log(`📍 API Health: http://localhost:${PORT}/api/health`);
 });

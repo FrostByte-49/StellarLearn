@@ -73,22 +73,31 @@ export const Mentor = () => {
   // REAL BACKEND AI RESPONSE
   // ===============================
   const getAIResponse = async (userMessage: string): Promise<string> => {
-  try {
-    const response = await fetch("http://localhost:5000/api/mentor", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ prompt: userMessage }), 
-    });
+    try {
+      const response = await fetch("https://stellarlearn.onrender.com/api/mentor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: userMessage }),
+      });
 
-    const data = await response.json();
-    return data.reply || "Pixie couldn't generate a response right now.";
-  } catch (err) {
-    console.error("Backend error:", err);
-    return "I'm having trouble reaching my server right now. Please try again in a moment.";
-  }
-};
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.reply) {
+        throw new Error('No response received from AI');
+      }
+      
+      return data.reply;
+    } catch (err) {
+      console.error("Backend error:", err);
+      return "I'm having trouble reaching my server right now. Please try again in a moment.";
+    }
+  };
 
   // ===============================
   // ✉ SEND MESSAGE HANDLER
@@ -110,7 +119,15 @@ export const Mentor = () => {
     setIsLoading(true);
 
     try {
-      const aiResponse = await getAIResponse(userMessage);
+      // Add timeout for long responses
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 30000)
+      );
+
+      const aiResponse = await Promise.race([
+        getAIResponse(userMessage),
+        timeoutPromise
+      ]);
 
       const newAIMessage: Message = {
         id: messages.length + 2,
@@ -121,9 +138,12 @@ export const Mentor = () => {
 
       setMessages(prev => [...prev, newAIMessage]);
     } catch (error) {
+      console.error('Error in handleSendMessage:', error);
       const errorMessage: Message = {
         id: messages.length + 2,
-        message: "Pixie is having some trouble responding right now.",
+        message: error instanceof Error && error.message === 'Request timeout' 
+          ? "This is taking longer than expected. Please try again with a simpler question."
+          : "Pixie is having some trouble responding right now. Please try again.",
         isUser: false,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };

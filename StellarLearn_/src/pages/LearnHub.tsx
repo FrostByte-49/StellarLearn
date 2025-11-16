@@ -31,7 +31,8 @@ export const LearnHub = () => {
   const [userQuestion, setUserQuestion] = useState('');
   const [isAskingMentor, setIsAskingMentor] = useState(false);
 
-  const API_BASE = 'http://localhost:5000/api';
+  // FIXED: Added /api to the base URL
+  const API_BASE = 'https://stellarlearn.onrender.com/api';
 
   const GlassCard = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
     <div className={`backdrop-blur-md bg-white/5 border border-white/10 rounded-3xl ${className}`}>
@@ -199,79 +200,79 @@ export const LearnHub = () => {
   };
 
   const formatNotes = (notes: string) => {
-  // Clean the notes first - remove any JSON formatting
-  let cleanNotes = notes;
-  
-  // Remove JSON markdown blocks if present
-  cleanNotes = cleanNotes.replace(/```json\s*/g, '').replace(/```\s*/g, '');
-  
-  // Try to parse as JSON and extract the notes content
-  try {
-    const parsed = JSON.parse(cleanNotes);
-    if (typeof parsed === 'object' && parsed.notes) {
-      cleanNotes = parsed.notes;
+    // Clean the notes first - remove any JSON formatting
+    let cleanNotes = notes;
+    
+    // Remove JSON markdown blocks if present
+    cleanNotes = cleanNotes.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    
+    // Try to parse as JSON and extract the notes content
+    try {
+      const parsed = JSON.parse(cleanNotes);
+      if (typeof parsed === 'object' && parsed.notes) {
+        cleanNotes = parsed.notes;
+      }
+    } catch {
+      // If it's not valid JSON, use the notes as is
+      cleanNotes = cleanNotes.trim();
     }
-  } catch {
-    // If it's not valid JSON, use the notes as is
-    cleanNotes = cleanNotes.trim();
-  }
-  
-  // Remove any remaining JSON structure
-  cleanNotes = cleanNotes.replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').trim();
+    
+    // Remove any remaining JSON structure
+    cleanNotes = cleanNotes.replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').trim();
 
-  return cleanNotes.split('\n').map((line, index) => {
-    const trimmedLine = line.trim();
-    
-    // Handle bold text by converting **text** to actual bold styling
-    const renderWithBold = (text: string) => {
-      const parts = text.split(/(\*\*.*?\*\*)/g);
-      return parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i} className="text-white font-semibold">{part.slice(2, -2)}</strong>;
-        }
-        return part;
-      });
-    };
-    
-    if (trimmedLine.startsWith('# ')) {
-      return <h1 key={index} className="text-2xl font-bold text-white mt-8 mb-4 pb-2 border-b border-white/20">{trimmedLine.replace('# ', '')}</h1>;
-    } else if (trimmedLine.startsWith('## ')) {
-      return <h2 key={index} className="text-xl font-bold text-white mt-6 mb-3">{trimmedLine.replace('## ', '')}</h2>;
-    } else if (trimmedLine.startsWith('### ')) {
-      return <h3 key={index} className="text-lg font-bold text-white mt-5 mb-2">{trimmedLine.replace('### ', '')}</h3>;
-    } else if (trimmedLine.startsWith('#### ')) {
-      return <h4 key={index} className="text-md font-bold text-white mt-4 mb-2">{trimmedLine.replace('#### ', '')}</h4>;
-    } else if (trimmedLine.startsWith('- **') && trimmedLine.includes('**:')) {
-      const parts = trimmedLine.split('**:');
-      return (
-        <div key={index} className="flex mt-3 ml-4">
-          <span className="font-bold text-white mr-2 min-w-fit">{parts[0].replace('- **', '')}:</span>
-          <span className="text-white/80 flex-1">{renderWithBold(parts.slice(1).join(':'))}</span>
-        </div>
-      );
-    } else if (trimmedLine.startsWith('- **')) {
-      return (
-        <li key={index} className="text-white/80 ml-6 mt-2 list-disc">
-          {renderWithBold(trimmedLine.replace('- **', '').replace('**', ''))}
-        </li>
-      );
-    } else if (trimmedLine.startsWith('- ')) {
-      return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{renderWithBold(trimmedLine.replace('- ', ''))}</li>;
-    } else if (trimmedLine.startsWith('• ')) {
-      return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{renderWithBold(trimmedLine.replace('• ', ''))}</li>;
-    } else if (trimmedLine.startsWith('* ')) {
-      return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{renderWithBold(trimmedLine.replace('* ', ''))}</li>;
-    } else if (/^\d+\.\s/.test(trimmedLine)) {
-      return <li key={index} className="text-white/80 ml-6 mt-2 list-decimal">{renderWithBold(trimmedLine.replace(/^\d+\.\s/, ''))}</li>;
-    } else if (trimmedLine === '') {
-      return <div key={index} className="h-4" />;
-    } else if (trimmedLine.startsWith('---') || trimmedLine.startsWith('___') || trimmedLine.startsWith('***')) {
-      return <hr key={index} className="my-6 border-white/20" />;
-    } else {
-      return <p key={index} className="text-white/80 mt-3 leading-relaxed">{renderWithBold(trimmedLine)}</p>;
-    }
-  });
-};
+    return cleanNotes.split('\n').map((line, index) => {
+      const trimmedLine = line.trim();
+      
+      // Handle bold text by converting **text** to actual bold styling
+      const renderWithBold = (text: string) => {
+        const parts = text.split(/(\*\*.*?\*\*)/g);
+        return parts.map((part, i) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={i} className="text-white font-semibold">{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        });
+      };
+      
+      if (trimmedLine.startsWith('# ')) {
+        return <h1 key={index} className="text-2xl font-bold text-white mt-8 mb-4 pb-2 border-b border-white/20">{trimmedLine.replace('# ', '')}</h1>;
+      } else if (trimmedLine.startsWith('## ')) {
+        return <h2 key={index} className="text-xl font-bold text-white mt-6 mb-3">{trimmedLine.replace('## ', '')}</h2>;
+      } else if (trimmedLine.startsWith('### ')) {
+        return <h3 key={index} className="text-lg font-bold text-white mt-5 mb-2">{trimmedLine.replace('### ', '')}</h3>;
+      } else if (trimmedLine.startsWith('#### ')) {
+        return <h4 key={index} className="text-md font-bold text-white mt-4 mb-2">{trimmedLine.replace('#### ', '')}</h4>;
+      } else if (trimmedLine.startsWith('- **') && trimmedLine.includes('**:')) {
+        const parts = trimmedLine.split('**:');
+        return (
+          <div key={index} className="flex mt-3 ml-4">
+            <span className="font-bold text-white mr-2 min-w-fit">{parts[0].replace('- **', '')}:</span>
+            <span className="text-white/80 flex-1">{renderWithBold(parts.slice(1).join(':'))}</span>
+          </div>
+        );
+      } else if (trimmedLine.startsWith('- **')) {
+        return (
+          <li key={index} className="text-white/80 ml-6 mt-2 list-disc">
+            {renderWithBold(trimmedLine.replace('- **', '').replace('**', ''))}
+          </li>
+        );
+      } else if (trimmedLine.startsWith('- ')) {
+        return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{renderWithBold(trimmedLine.replace('- ', ''))}</li>;
+      } else if (trimmedLine.startsWith('• ')) {
+        return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{renderWithBold(trimmedLine.replace('• ', ''))}</li>;
+      } else if (trimmedLine.startsWith('* ')) {
+        return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{renderWithBold(trimmedLine.replace('* ', ''))}</li>;
+      } else if (/^\d+\.\s/.test(trimmedLine)) {
+        return <li key={index} className="text-white/80 ml-6 mt-2 list-decimal">{renderWithBold(trimmedLine.replace(/^\d+\.\s/, ''))}</li>;
+      } else if (trimmedLine === '') {
+        return <div key={index} className="h-4" />;
+      } else if (trimmedLine.startsWith('---') || trimmedLine.startsWith('___') || trimmedLine.startsWith('***')) {
+        return <hr key={index} className="my-6 border-white/20" />;
+      } else {
+        return <p key={index} className="text-white/80 mt-3 leading-relaxed">{renderWithBold(trimmedLine)}</p>;
+      }
+    });
+  };
 
   const exportNotes = () => {
     if (!generatedContent?.notes) return;
