@@ -1,5 +1,5 @@
 import { Sidebar } from '../components/Sidebar';
-import { Plus, Sparkles, Zap, BookOpen, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import { Plus, Sparkles, Zap, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface Flashcard {
