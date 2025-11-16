@@ -50,7 +50,7 @@ export const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 container mx-auto px-8 pt-16 pb-32">
+      <section className="relative z-10 container mx-auto px-8 pt-8 pb-32">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
             <div className="inline-block">
@@ -63,13 +63,13 @@ export const Landing = () => {
             <h1 className="text-6xl lg:text-7xl font-bold text-white leading-tight">
               Learn Across{' '}
               <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-                the Universe
+                The Universe
               </span>
             </h1>
 
-            <p className="text-xl text-white/80 leading-relaxed max-w-xl">
+            <p className="text-xl text-white/80 leading-relaxed max-w-xl capitalize">
               Embark on an interstellar educational journey where every lesson is a mission, 
-              every topic a new galaxy, and every achievement a star in your cosmic constellation.
+              every topic a new galaxy, and every achievement a star in your cosmic constellation...
             </p>
 
             <div className="flex flex-wrap gap-4">
@@ -133,29 +133,6 @@ export const Landing = () => {
                   </div>
                 </div>
 
-                {/* Orbiting Planets */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  {/* Tech Planet */}
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 animate-orbit-slow">
-                    <div className="w-16 h-16 bg-white/10 border border-white/20 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-sm">
-                      <Brain className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                  
-                  {/* Science Planet */}
-                  <div className="absolute top-1/2 -right-4 -translate-y-1/2 animate-orbit-medium">
-                    <div className="w-14 h-14 bg-white/10 border border-white/20 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-sm">
-                      <Star className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                  
-                  {/* Progress Planet */}
-                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 animate-orbit-fast">
-                    <div className="w-12 h-12 bg-white/10 border border-white/20 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-sm">
-                      <TrendingUp className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -179,7 +156,7 @@ export const Landing = () => {
           <h2 className="text-5xl font-bold text-white mb-6">
             Why Choose <span className="text-white">StellarLearn?</span>
           </h2>
-          <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed capitalize">
             Experience the future of education with our cosmic learning ecosystem designed to make 
             every study session an interstellar adventure
           </p>
@@ -225,7 +202,7 @@ export const Landing = () => {
           <h2 className="text-5xl font-bold text-white mb-6">
             Powerful Learning <span className="text-white">Features</span>
           </h2>
-          <p className="text-xl text-white/60 max-w-3xl mx-auto">
+          <p className="text-xl text-white/60 max-w-3xl mx-auto capitalize">
             Discover our comprehensive suite of tools designed to enhance your learning experience
           </p>
         </div>
@@ -293,7 +270,7 @@ export const Landing = () => {
             <h2 className="text-5xl font-bold text-white mb-6">
               Ready to Launch Your Learning Journey?
             </h2>
-            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed capitalize">
               Join thousands of cosmic learners exploring the universe of knowledge. 
               Your educational adventure across the stars begins now.
             </p>
@@ -316,63 +293,106 @@ export const Landing = () => {
       {/* Enhanced Footer */}
       <footer className="relative z-10 border-t border-white/10 backdrop-blur-2xl bg-white/5">
         <div className="container mx-auto px-8 py-16">
-          <div className="grid lg:grid-cols-5 gap-8 mb-12">
+          <div className="grid lg:grid-cols-5 gap-24 mb-12">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-3 mb-6">
                 <Logo size={40} />
-                <span className="text-2xl font-bold text-white">StellarLearn</span>
+                <span className="text-3xl font-bold text-white">StellarLearn</span>
               </div>
-              <p className="text-white/70 text-lg leading-relaxed max-w-md">
+              <p className="text-white/70 text-lg leading-relaxed max-w-md capitalize">
                 Pioneering the future of education through cosmic exploration and AI-powered learning adventures. 
                 Join us in making knowledge accessible across the universe.
               </p>
             </div>
             
-            {[
-              {
-                title: "Platform",
-                links: ["Features", "Pricing", "Testimonials", "Roadmap"]
-              },
-              {
-                title: "Resources", 
-                links: ["Learning Paths", "Documentation", "Blog", "Webinars"]
-              },
-              {
-                title: "Support",
-                links: ["Help Center", "Contact", "Community", "Privacy Policy"]
-              }
-            ].map((column, index) => (
-              <div key={index}>
-                <h4 className="text-white font-bold text-lg mb-6">{column.title}</h4>
-                <ul className="space-y-3">
-                  {column.links.map((link) => (
-                    <li key={link}>
-                      <a href="#" className="text-white/70 hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            {/* Features Column */}
+            <div>
+              <h4 className="text-white font-bold text-lg mb-6">Features</h4>
+              <ul className="space-y-3">
+                {[
+                  { name: "Mission Quests", path: "/quests" },
+                  { name: "LearnHub", path: "/learnhub" },
+                  { name: "AI Mentor", path: "/mentor" },
+                  { name: "Flashcards", path: "/flashcards" }
+                ].map((feature) => (
+                  <li key={feature.name}>
+                    <a 
+                      href={feature.path} 
+                      className="text-white/70 hover:text-white transition-all duration-300 hover:translate-x-1 inline-block"
+                    >
+                      {feature.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+              
+            {/* Resources Column */}
+            <div>
+              <h4 className="text-white font-bold text-lg mb-6">Resources</h4>
+              <ul className="space-y-3">
+                {["Learning Paths", "Documentation", "Blogs", "Roadmap"].map((link) => (
+                  <li key={link}>
+                    <a href="#" className="text-white/70 hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+              
+            {/* Support Column */}
+            <div>
+              <h4 className="text-white font-bold text-lg mb-6">Support</h4>
+              <ul className="space-y-3">
+                {["Help Center", "Contact", "Community", "Privacy Policy"].map((link) => (
+                  <li key={link}>
+                    <a href="#" className="text-white/70 hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+    
           </div>
           
-          <div className="border-t border-white/10 pt-8 flex flex-col lg:flex-row justify-between items-center">
-            <p className="text-white/60 text-base">
-              © 2024 StellarLearn. Embark on infinite learning possibilities.
+           <div className="border-t border-white/10 pt-8 flex flex-col lg:flex-row justify-between items-center">
+            <p className="text-white/60 text-base capitalize">
+              © {new Date().getFullYear()} StellarLearn. Embark on infinite learning possibilities.
             </p>
-            <div className="flex gap-6 mt-4 lg:mt-0">
-              {['Twitter', 'LinkedIn', 'GitHub', 'Discord'].map((social) => (
+            <div className="flex gap-10 mt-4 lg:mt-0">
+              {[
+                { 
+                  name: 'Email', 
+                  url: 'mailto:pranav.kh25@gmail.com' 
+                },
+                { 
+                  name: 'GitHub', 
+                  url: 'https://github.com/FrostByte-49' 
+                },
+                { 
+                  name: 'LinkedIn', 
+                  url: 'https://www.linkedin.com/in/pranav-kh' 
+                },
+                { 
+                  name: 'Discord', 
+                  url: 'https://discord.com/users/1377918872925241375' 
+                }
+              ].map((social) => (
                 <a 
-                  key={social} 
-                  href="#" 
+                  key={social.name}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-white/60 hover:text-white transition-all duration-300 hover:scale-110 text-base"
                 >
-                  {social}
+                  {social.name}
                 </a>
               ))}
             </div>
           </div>
+
         </div>
       </footer>
       
