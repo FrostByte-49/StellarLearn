@@ -222,9 +222,15 @@ export const Mentor = () => {
             <div className="space-y-6">
               <GlassCard className="p-6 text-center">
                 <div className="flex justify-center mb-4">
-                  <AstronautAvatar size={100} animated={true} />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">Nova</h3>
+                  <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-white/20">
+                    <img 
+                      src="/images/Picture_1.jpg" 
+                      alt="Feature Icon"
+                      className="w-full h-full object-cover object-top" 
+                    />
+                  </div>
+                `</div>
+                <h3 className="text-xl font-bold text-white mb-2">Pixie</h3>
                 <p className="text-sm text-white/60 mb-4">Your AI Learning Assistant</p>
                 <div className="flex items-center justify-center gap-2 text-sm">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse" />

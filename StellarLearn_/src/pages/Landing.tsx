@@ -7,7 +7,7 @@ export const Landing = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-black via-[#0A0F2D] to-black">
+    <div className="relative min-h-screen overflow-hidden bg-black">
       {/* Animated Star Background */}
       <div className="absolute inset-0">
         {[...Array(100)].map((_, i) => (
@@ -127,9 +127,14 @@ export const Landing = () => {
                 {/* Central Astronaut */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                   <div className="relative">
-                    <AstronautAvatar size={280} animated={true} />
+                    {/* Replace with your image */}
+                    <img 
+                      src="/images/Picture_1.jpg" 
+                      alt="StellarLearn Hero"
+                      className="w-full h-full object-cover"
+                    />
                     {/* White glow effect */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/5 rounded-full blur-2xl" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white/5 rounded-full blur-2xl" />
                   </div>
                 </div>
 
