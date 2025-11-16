@@ -1,4 +1,4 @@
-import { Home, Target, Bot, CreditCard, Award, Settings, Menu, X } from 'lucide-react';
+import { Home, Target, Bot, FileText, CreditCard, Award, Settings, Menu, X } from 'lucide-react';
 import { Logo } from './Logo';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -29,8 +29,8 @@ export const Sidebar = () => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'quests', label: 'Missions', icon: Target },
+    { id: 'learnhub', label: 'LearnHub', icon: FileText },
     { id: 'mentor', label: 'AI Mentor', icon: Bot },
-    { id: 'flashcards', label: 'Flashcards', icon: CreditCard },
     { id: 'flashcards', label: 'Flashcards', icon: CreditCard },
     { id: 'achievements', label: 'Achievements', icon: Award },
     { id: 'settings', label: 'Settings', icon: Settings },
