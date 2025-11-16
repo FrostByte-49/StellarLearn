@@ -113,7 +113,7 @@ export const Flashcards = () => {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Flashcards</h1>
-              <p className="text-white/60">Master concepts through active recall</p>
+              <p className="text-white/60 capitalize">Master concepts through active recall</p>
             </div>
             <div className="flex gap-3">
               <button className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 text-white">

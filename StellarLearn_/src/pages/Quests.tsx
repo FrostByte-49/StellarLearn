@@ -323,7 +323,7 @@ export const Quests = () => {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Mission Quests</h1>
-              <p className="text-white/60">Choose your next learning adventure</p>
+              <p className="text-white/60 capitalize">Choose your next learning adventure</p>
             </div>
             <button 
               onClick={() => navigate('/quests')}

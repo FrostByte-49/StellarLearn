@@ -115,10 +115,10 @@ export const Dashboard = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 capitalize">
                 Welcome back, <span className="text-white">Explorer</span>
               </h1>
-              <p className="text-white/60">Continue your journey through the cosmos of knowledge</p>
+              <p className="text-white/60 capitalize">Continue your journey through the cosmos of knowledge</p>
             </div>
 
             <div className="flex items-center gap-4">

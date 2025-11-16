@@ -141,7 +141,7 @@ export const Mentor = () => {
           {/* Header */}
           <div className="mb-6 flex-shrink-0">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">AI Mentor</h1>
-            <p className="text-white/60">Your personal learning companion</p>
+            <p className="text-white/60 capitalize">Your personal learning companion</p>
           </div>
 
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
