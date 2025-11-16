@@ -41,6 +41,17 @@ export const Mentor = () => {
     </div>
   );
 
+  // Format message text to handle bold markdown
+  const formatMessage = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="text-inherit font-semibold">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
   const ChatBubble = ({ message, isUser, timestamp }: { message: string; isUser: boolean; timestamp: string }) => (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
       <div
@@ -50,7 +61,9 @@ export const Mentor = () => {
             : 'bg-white/10 text-white rounded-bl-none border border-white/20'
         }`}
       >
-        <p className="text-sm whitespace-pre-wrap">{message}</p>
+        <p className="text-sm whitespace-pre-wrap">
+          {formatMessage(message)}
+        </p>
         <p className={`text-xs mt-2 ${isUser ? 'text-black/60' : 'text-white/60'}`}>{timestamp}</p>
       </div>
     </div>
@@ -228,7 +241,7 @@ export const Mentor = () => {
                       className="w-full h-full object-cover object-top" 
                     />
                   </div>
-                `</div>
+                </div>
                 <h3 className="text-xl font-bold text-white mb-2">Pixie</h3>
                 <p className="text-sm text-white/60 mb-4">Your AI Learning Assistant</p>
                 <div className="flex items-center justify-center gap-2 text-sm">
