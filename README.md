@@ -308,5 +308,7 @@ If you find StellarLearn helpful in your learning journey, please consider givin
 <br><br>
 
 ```text
-💫 "The Universe Is Full Of Magical Things Patiently Waiting For Our Wits To Grow Sharper."  – Eden Phillpotts
+💫 "The Universe Is Full Of Magical Things Patiently Waiting For Our Wits To Grow Sharper."
+
+    – Eden Phillpotts
 ```
