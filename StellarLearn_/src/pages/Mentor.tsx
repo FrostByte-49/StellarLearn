@@ -1,5 +1,4 @@
 import { Sidebar } from '../components/Sidebar';
-import { AstronautAvatar } from '../components/AstronautAvatar';
 import { Send, Sparkles, Brain, BookOpen, Zap, Target } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 

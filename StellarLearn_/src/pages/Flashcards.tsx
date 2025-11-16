@@ -97,7 +97,7 @@ export const Flashcards = () => {
       <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
         <Sidebar />
         <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 flex items-center justify-center">
-          <div className="text-white text-xl">Loading flashcards...</div>
+          <div className="text-white text-xl">Loading Flashcards...</div>
         </main>
       </div>
     );

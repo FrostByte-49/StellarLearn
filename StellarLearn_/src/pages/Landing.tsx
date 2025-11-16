@@ -1,7 +1,6 @@
-import { Rocket, Sparkles, Target, Users, BookOpen, Star, MessageCircle, FileText, ChevronRight, Play, Brain, TrendingUp } from 'lucide-react';
+import { Rocket, Sparkles, Target, Users, BookOpen, MessageCircle, FileText, ChevronRight, Play} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
-import { AstronautAvatar } from '../components/AstronautAvatar';
 
 export const Landing = () => {
   const navigate = useNavigate();
