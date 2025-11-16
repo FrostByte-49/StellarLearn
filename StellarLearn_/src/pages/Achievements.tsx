@@ -155,7 +155,7 @@ export const Achievements = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
+      <div className="flex min-h-screen bg-black">
         <Sidebar />
         <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 flex items-center justify-center">
           <div className="text-white text-lg">Loading Achievements...</div>
@@ -165,7 +165,7 @@ export const Achievements = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
+    <div className="flex min-h-screen bg-black">
       <Sidebar />
       
       <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8">

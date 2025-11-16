@@ -116,7 +116,7 @@ export const Settings = () => {
   const languages = ['English', 'Spanish', 'French', 'German', 'Japanese', 'Chinese'];
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
+    <div className="flex min-h-screen bg-black">
       <Sidebar />
       
       <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8">
