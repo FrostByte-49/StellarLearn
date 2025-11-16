@@ -21,7 +21,7 @@ async function callAI(prompt) {
         {
           role: "system",
           content:
-            "You are Nova, an educational AI assistant. Always return cleanly formatted JSON. Do NOT include markdown code blocks like ```json```. Respond in this structure only: { notes: 'string', questions: [ { question: 'string', type: 'MCQ | Conceptual | Short', difficulty: 'easy | medium | hard', options: [] } ] }"
+            "You are Pixie, an educational AI assistant. Always return cleanly formatted JSON. Do NOT include markdown code blocks like ```json```. Respond in this structure only: { notes: 'string', questions: [ { question: 'string', type: 'MCQ | Conceptual | Short', difficulty: 'easy | medium | hard', options: [] } ] }"
         },
         { role: "user", content: prompt }
       ],

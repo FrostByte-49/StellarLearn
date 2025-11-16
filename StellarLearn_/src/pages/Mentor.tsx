@@ -15,7 +15,7 @@ export const Mentor = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      message: "Hello! I'm Nova, your AI astronaut mentor. I'm here to help you explore the universe of knowledge. What would you like to learn today?",
+      message: "Hello! I'm Pixie, your AI Learning Assistant. I'm here to help you explore the universe of knowledge. What would you like to learn today?",
       isUser: false,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
@@ -71,7 +71,7 @@ export const Mentor = () => {
     });
 
     const data = await response.json();
-    return data.reply || "Nova couldn't generate a response right now.";
+    return data.reply || "Pixie couldn't generate a response right now.";
   } catch (err) {
     console.error("Backend error:", err);
     return "I'm having trouble reaching my server right now. Please try again in a moment.";
@@ -111,7 +111,7 @@ export const Mentor = () => {
     } catch (error) {
       const errorMessage: Message = {
         id: messages.length + 2,
-        message: "Nova is having some trouble responding right now.",
+        message: "Pixie is having some trouble responding right now.",
         isUser: false,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
@@ -169,7 +169,7 @@ export const Mentor = () => {
                               <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                               <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                             </div>
-                            <span className="text-sm text-white/60">Nova is thinking...</span>
+                            <span className="text-sm text-white/60">Pixie is thinking...</span>
                           </div>
                         </div>
                       </div>
@@ -224,7 +224,7 @@ export const Mentor = () => {
                 <div className="flex justify-center mb-4">
                   <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-white/20">
                     <img 
-                      src="/images/Picture_1.jpg" 
+                      src="https://res.cloudinary.com/dhn92qb61/image/upload/v1763296742/download_wym1cc.jpg" 
                       alt="Feature Icon"
                       className="w-full h-full object-cover object-top" 
                     />
