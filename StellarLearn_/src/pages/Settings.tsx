@@ -23,9 +23,9 @@ interface SettingsData {
 export const Settings = () => {
   const [settings, setSettings] = useState<SettingsData>({
     profile: {
-      displayName: 'Explorer',
-      email: 'explorer@stellarlearn.space',
-      profilePic: ''
+      displayName: 'Zero',
+      email: 'zero@stellarlearn.space',
+      profilePic: 'https://res.cloudinary.com/dhn92qb61/image/upload/v1751381563/Gojo__o3vpim.webp'
     },
     notifications: {
       dailyReminders: true,
