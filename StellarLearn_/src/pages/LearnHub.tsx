@@ -1,12 +1,37 @@
 import { Sidebar } from '../components/Sidebar';
-import { Upload, FileText, Youtube, MessageCircle, Download, Sparkles } from 'lucide-react';
+import { Upload, FileText, Youtube, MessageCircle, Download, Sparkles, Send } from 'lucide-react';
 import { useState } from 'react';
+
+interface Question {
+  question: string;
+  type: 'MCQ' | 'Conceptual' | 'Short' | 'multiple-choice' | 'short-answer' | 'step-by-step';
+  difficulty: 'easy' | 'medium' | 'hard';
+  options?: string[];
+}
+
+interface GeneratedContent {
+  notes: string;
+  questions: Question[];
+}
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 export const LearnHub = () => {
   const [activeTab, setActiveTab] = useState<'upload' | 'notes' | 'questions' | 'mentor'>('upload');
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
+  const [mentorMessages, setMentorMessages] = useState<ChatMessage[]>([
+    { role: 'assistant', content: "Hello! I'm here to help you understand any concepts or questions you have. What would you like to know?" }
+  ]);
+  const [userQuestion, setUserQuestion] = useState('');
+  const [isAskingMentor, setIsAskingMentor] = useState(false);
+
+  const API_BASE = 'http://localhost:5000/api';
 
   const GlassCard = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
     <div className={`backdrop-blur-md bg-white/5 border border-white/10 rounded-3xl ${className}`}>
@@ -14,68 +39,265 @@ export const LearnHub = () => {
     </div>
   );
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === 'application/pdf') {
       setUploadedFile(file);
-      processContent();
+      await processPDF(file);
     }
   };
 
-  const handleYoutubeSubmit = (e: React.FormEvent) => {
+  const handleYoutubeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (youtubeUrl.trim()) {
-      processContent();
+      await processYouTube(youtubeUrl);
     }
   };
 
-  const processContent = () => {
+  const processPDF = async (file: File) => {
     setIsProcessing(true);
-    // Simulate processing delay
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      // For demo purposes, we'll simulate PDF text extraction
+      const simulatedText = `This is a simulated PDF content about ${file.name.replace('.pdf', '')}. 
+      
+      Key topics covered:
+      - Introduction to the subject
+      - Important concepts and definitions
+      - Practical applications
+      - Summary and conclusions
+      
+      This content would normally be extracted from the PDF file using a proper PDF parsing service.`;
+
+      const response = await fetch(`${API_BASE}/pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: simulatedText }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process PDF');
+      }
+
+      const data = await response.json();
+      setGeneratedContent(data);
       setActiveTab('notes');
-    }, 2000);
+    } catch (error) {
+      console.error('Error processing PDF:', error);
+      alert('Failed to process PDF. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  // Mock data for demonstration
-  const generatedNotes = `
-# Algebra Basics
+  const processYouTube = async (url: string) => {
+    setIsProcessing(true);
+    try {
+      // For demo purposes, we'll simulate YouTube transcript
+      const simulatedTranscript = `This is a simulated transcript from a YouTube video about mathematics.
+      
+      The video covers:
+      - Basic algebraic concepts
+      - Equation solving techniques
+      - Real-world applications
+      - Practice problems and solutions
+      
+      This transcript would normally be fetched from YouTube's API or a transcript service.`;
 
-## Key Concepts
-- **Variables**: Symbols that represent unknown values
-- **Equations**: Mathematical statements showing equality
-- **Expressions**: Combinations of numbers and variables
+      const response = await fetch(`${API_BASE}/youtube`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ transcript: simulatedTranscript }),
+      });
 
-## Important Formulas
-- Quadratic Formula: x = [-b ± √(b² - 4ac)] / 2a
-- Slope-intercept: y = mx + b
+      if (!response.ok) {
+        throw new Error('Failed to process YouTube video');
+      }
 
-## Summary
-Algebra forms the foundation for advanced mathematics and problem-solving.
-  `.trim();
-
-  const generatedQuestions = [
-    {
-      id: 1,
-      question: "What is the value of x in 2x + 5 = 15?",
-      type: "short-answer",
-      difficulty: "easy"
-    },
-    {
-      id: 2,
-      question: "Solve the quadratic equation: x² - 5x + 6 = 0",
-      type: "step-by-step",
-      difficulty: "medium"
-    },
-    {
-      id: 3,
-      question: "Which of the following is a linear equation?",
-      options: ["y = x²", "y = 2x + 3", "y = sin(x)"],
-      type: "multiple-choice",
-      difficulty: "easy"
+      const data = await response.json();
+      setGeneratedContent(data);
+      setActiveTab('notes');
+    } catch (error) {
+      console.error('Error processing YouTube:', error);
+      alert('Failed to process YouTube video. Please try again.');
+    } finally {
+      setIsProcessing(false);
     }
-  ];
+  };
+
+  const askMentor = async (question: string) => {
+    if (!question.trim()) return;
+
+    setIsAskingMentor(true);
+    const newUserMessage: ChatMessage = { role: 'user', content: question };
+    setMentorMessages(prev => [...prev, newUserMessage]);
+    setUserQuestion('');
+
+    try {
+      // Update the prompt to request clean text instead of JSON
+      const mentorPrompt = `Please provide a clear, helpful explanation in plain text format (no JSON). Answer this question: "${question}"`;
+      
+      const response = await fetch(`${API_BASE}/mentor`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: mentorPrompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get mentor response');
+      }
+
+      const data = await response.json();
+      
+      // Clean the response - remove any JSON formatting and extract clean text
+      let cleanResponse = data.reply;
+      
+      // Remove JSON markdown blocks if present
+      cleanResponse = cleanResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+      
+      // Try to parse as JSON and extract the content if it's still in JSON format
+      try {
+        const parsed = JSON.parse(cleanResponse);
+        if (typeof parsed === 'object' && parsed.notes) {
+          cleanResponse = parsed.notes;
+        } else if (typeof parsed === 'object' && parsed.reply) {
+          cleanResponse = parsed.reply;
+        } else if (typeof parsed === 'object') {
+          // If it's an object, try to stringify the most relevant field
+          cleanResponse = JSON.stringify(parsed, null, 2);
+        }
+      } catch {
+        // If it's not valid JSON, use the response as is
+        cleanResponse = cleanResponse.trim();
+      }
+      
+      // Remove any remaining JSON structure indicators
+      cleanResponse = cleanResponse.replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').trim();
+      
+      const assistantMessage: ChatMessage = { role: 'assistant', content: cleanResponse };
+      setMentorMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error asking mentor:', error);
+      const errorMessage: ChatMessage = { 
+        role: 'assistant', 
+        content: "I'm sorry, I encountered an error. Please try again later." 
+      };
+      setMentorMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsAskingMentor(false);
+    }
+  };
+
+  const handleMentorSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    askMentor(userQuestion);
+  };
+
+  const formatNotes = (notes: string) => {
+    // Clean the notes first - remove any JSON formatting
+    let cleanNotes = notes;
+    
+    // Remove JSON markdown blocks if present
+    cleanNotes = cleanNotes.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    
+    // Try to parse as JSON and extract the notes content
+    try {
+      const parsed = JSON.parse(cleanNotes);
+      if (typeof parsed === 'object' && parsed.notes) {
+        cleanNotes = parsed.notes;
+      }
+    } catch {
+      // If it's not valid JSON, use the notes as is
+      cleanNotes = cleanNotes.trim();
+    }
+    
+    // Remove any remaining JSON structure
+    cleanNotes = cleanNotes.replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').trim();
+
+    return cleanNotes.split('\n').map((line, index) => {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine.startsWith('# ')) {
+        return <h1 key={index} className="text-2xl font-bold text-white mt-8 mb-4 pb-2 border-b border-white/20">{trimmedLine.replace('# ', '')}</h1>;
+      } else if (trimmedLine.startsWith('## ')) {
+        return <h2 key={index} className="text-xl font-bold text-white mt-6 mb-3">{trimmedLine.replace('## ', '')}</h2>;
+      } else if (trimmedLine.startsWith('### ')) {
+        return <h3 key={index} className="text-lg font-bold text-white mt-5 mb-2">{trimmedLine.replace('### ', '')}</h3>;
+      } else if (trimmedLine.startsWith('#### ')) {
+        return <h4 key={index} className="text-md font-bold text-white mt-4 mb-2">{trimmedLine.replace('#### ', '')}</h4>;
+      } else if (trimmedLine.startsWith('- **') && trimmedLine.includes('**:')) {
+        const parts = trimmedLine.split('**:');
+        return (
+          <div key={index} className="flex mt-3 ml-4">
+            <span className="font-bold text-white mr-2 min-w-fit">{parts[0].replace('- **', '')}:</span>
+            <span className="text-white/80 flex-1">{parts.slice(1).join(':')}</span>
+          </div>
+        );
+      } else if (trimmedLine.startsWith('- **')) {
+        return (
+          <li key={index} className="text-white/80 ml-6 mt-2 list-disc">
+            <strong>{trimmedLine.replace('- **', '').replace('**', '')}</strong>
+          </li>
+        );
+      } else if (trimmedLine.startsWith('- ')) {
+        return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{trimmedLine.replace('- ', '')}</li>;
+      } else if (trimmedLine.startsWith('• ')) {
+        return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{trimmedLine.replace('• ', '')}</li>;
+      } else if (trimmedLine.startsWith('* ')) {
+        return <li key={index} className="text-white/80 ml-6 mt-2 list-disc">{trimmedLine.replace('* ', '')}</li>;
+      } else if (/^\d+\.\s/.test(trimmedLine)) {
+        return <li key={index} className="text-white/80 ml-6 mt-2 list-decimal">{trimmedLine.replace(/^\d+\.\s/, '')}</li>;
+      } else if (trimmedLine.includes('**') && trimmedLine.split('**').length === 3) {
+        const parts = trimmedLine.split('**');
+        return (
+          <p key={index} className="text-white/80 mt-3">
+            {parts[0]}<strong>{parts[1]}</strong>{parts[2]}
+          </p>
+        );
+      } else if (trimmedLine === '') {
+        return <div key={index} className="h-4" />;
+      } else if (trimmedLine.startsWith('---') || trimmedLine.startsWith('___') || trimmedLine.startsWith('***')) {
+        return <hr key={index} className="my-6 border-white/20" />;
+      } else {
+        return <p key={index} className="text-white/80 mt-3 leading-relaxed">{trimmedLine}</p>;
+      }
+    });
+  };
+
+  const exportNotes = () => {
+    if (!generatedContent?.notes) return;
+    
+    let cleanNotes = generatedContent.notes;
+    
+    // Clean the notes for export
+    cleanNotes = cleanNotes.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    
+    try {
+      const parsed = JSON.parse(cleanNotes);
+      if (typeof parsed === 'object' && parsed.notes) {
+        cleanNotes = parsed.notes;
+      }
+    } catch {
+      cleanNotes = cleanNotes.trim();
+    }
+    
+    cleanNotes = cleanNotes.replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').trim();
+    
+    const blob = new Blob([cleanNotes], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'study-notes.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-[#0A0F2D] to-black">
@@ -177,10 +399,10 @@ Algebra forms the foundation for advanced mathematics and problem-solving.
                     </div>
                     <button
                       type="submit"
-                      disabled={!youtubeUrl.trim()}
+                      disabled={!youtubeUrl.trim() || isProcessing}
                       className="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
-                      Process Video
+                      {isProcessing ? 'Processing...' : 'Process Video'}
                     </button>
                   </form>
                 </GlassCard>
@@ -195,7 +417,11 @@ Algebra forms the foundation for advanced mathematics and problem-solving.
                     <FileText className="w-6 h-6 text-white" />
                     <h3 className="text-xl font-bold text-white">Generated Notes</h3>
                   </div>
-                  <button className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all">
+                  <button 
+                    onClick={exportNotes}
+                    disabled={!generatedContent?.notes}
+                    className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
                     <Download className="w-4 h-4" />
                     Export
                   </button>
@@ -206,9 +432,13 @@ Algebra forms the foundation for advanced mathematics and problem-solving.
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
                     <p className="text-white/60">AI is generating your notes...</p>
                   </div>
+                ) : generatedContent ? (
+                  <div className="text-white">
+                    {formatNotes(generatedContent.notes)}
+                  </div>
                 ) : (
-                  <div className="prose prose-invert max-w-none">
-                    <pre className="text-white whitespace-pre-wrap font-sans">{generatedNotes}</pre>
+                  <div className="text-center py-12">
+                    <p className="text-white/60">No notes generated yet. Upload content to get started.</p>
                   </div>
                 )}
               </GlassCard>
@@ -222,39 +452,53 @@ Algebra forms the foundation for advanced mathematics and problem-solving.
                   <h3 className="text-xl font-bold text-white">Practice Questions</h3>
                 </div>
 
-                <div className="space-y-4">
-                  {generatedQuestions.map((q, index) => (
-                    <div key={q.id} className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                      <div className="flex items-start justify-between mb-3">
-                        <span className="text-white font-medium">Question {index + 1}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          q.difficulty === 'easy' ? 'bg-green-500/20 text-green-400' :
-                          q.difficulty === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                          'bg-red-500/20 text-red-400'
-                        }`}>
-                          {q.difficulty}
-                        </span>
-                      </div>
-                      <p className="text-white mb-3">{q.question}</p>
-                      {q.options && (
-                        <div className="space-y-2">
-                          {q.options.map((option, i) => (
-                            <div key={i} className="flex items-center gap-3 p-2 rounded-xl bg-white/5">
-                              <div className="w-4 h-4 rounded border border-white/30" />
-                              <span className="text-white/80">{option}</span>
-                            </div>
-                          ))}
+                {isProcessing ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                    <p className="text-white/60">AI is generating questions...</p>
+                  </div>
+                ) : generatedContent?.questions && generatedContent.questions.length > 0 ? (
+                  <div className="space-y-4">
+                    {generatedContent.questions.map((q, index) => (
+                      <div key={index} className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                        <div className="flex items-start justify-between mb-3">
+                          <span className="text-white font-medium">Question {index + 1}</span>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            q.difficulty === 'easy' ? 'bg-white/20 text-white' :
+                            q.difficulty === 'medium' ? 'bg-white/30 text-white' :
+                            'bg-white/40 text-white'
+                          }`}>
+                            {q.difficulty}
+                          </span>
                         </div>
-                      )}
-                      <button 
-                        onClick={() => setActiveTab('mentor')}
-                        className="mt-3 text-sm text-white/60 hover:text-white transition-colors"
-                      >
-                        Need help? Ask AI Mentor →
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                        <p className="text-white mb-3">{q.question}</p>
+                        {q.options && q.options.length > 0 && (
+                          <div className="space-y-2">
+                            {q.options.map((option, i) => (
+                              <div key={i} className="flex items-center gap-3 p-2 rounded-xl bg-white/5">
+                                <div className="w-4 h-4 rounded border border-white/30" />
+                                <span className="text-white/80">{option}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <button 
+                          onClick={() => {
+                            setActiveTab('mentor');
+                            setUserQuestion(`Can you help me with this question: ${q.question}`);
+                          }}
+                          className="mt-3 text-sm text-white/60 hover:text-white transition-colors"
+                        >
+                          Need help? Ask AI Mentor →
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-white/60">No questions generated yet. Upload content to get started.</p>
+                  </div>
+                )}
               </GlassCard>
             )}
 
@@ -267,21 +511,49 @@ Algebra forms the foundation for advanced mathematics and problem-solving.
                 </div>
 
                 <div className="space-y-4">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                    <p className="text-white/60 text-sm mb-2">AI Mentor:</p>
-                    <p className="text-white">Hello! I'm here to help you understand any concepts or questions you have. What would you like to know?</p>
+                  {/* Chat Messages */}
+                  <div className="h-96 overflow-y-auto space-y-4">
+                    {mentorMessages.map((message, index) => (
+                      <div
+                        key={index}
+                        className={`p-4 rounded-2xl ${
+                          message.role === 'user'
+                            ? 'bg-white/20 border border-white/30 ml-8'
+                            : 'bg-white/5 border border-white/10 mr-8'
+                        }`}
+                      >
+                        <p className="text-white whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                      </div>
+                    ))}
+                    {isAskingMentor && (
+                      <div className="p-4 rounded-2xl bg-white/5 border border-white/10 mr-8">
+                        <div className="flex space-x-2">
+                          <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex gap-3">
+                  {/* Input Form */}
+                  <form onSubmit={handleMentorSubmit} className="flex gap-3">
                     <input
                       type="text"
+                      value={userQuestion}
+                      onChange={(e) => setUserQuestion(e.target.value)}
                       placeholder="Ask me anything about your study material..."
-                      className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 focus:border-white/50 focus:bg-white/10 outline-none text-white transition-all"
+                      disabled={isAskingMentor}
+                      className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 focus:border-white/50 focus:bg-white/10 outline-none text-white transition-all disabled:opacity-50"
                     />
-                    <button className="px-6 py-3 rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all">
-                      Ask
+                    <button
+                      type="submit"
+                      disabled={!userQuestion.trim() || isAskingMentor}
+                      className="px-6 py-3 rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                      <Send className="w-4 h-4" />
                     </button>
-                  </div>
+                  </form>
                 </div>
               </GlassCard>
             )}
